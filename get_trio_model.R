@@ -23,7 +23,6 @@ gene.exp <- fread('data_RNA_Seq_v2_mRNA_median_all_sample_Zscores.txt',data.tabl
 TCGA.meth <- fread("split.names.TCGA.meth.logit.txt", data.table=F)
 trios <- fread("trio.final.protein.coding.txt")
 clinical.pos  <- fread("names.pos.patient2.txt", header = FALSE) # ER+ patients ID
-clinical.neg <- fread("names.neg.patient2.txt", header = FALSE) # ER- patients ID
 
 # length 787: meth, gene.exp
 # length 777: Finding common individuals among the 3 datasets:cna,gene.exp, meth
