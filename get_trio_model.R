@@ -103,7 +103,6 @@ get_trio_data <- function(trio_row,
   U_exp   <- pca_E_final %>% select(all_of(as.numeric(U_E[[1]])))
   
   # --- PCA covariates for methylation ---
-  # Fix: use == with the local variable, not column name reference
   U_M     <- meth.posER.pc.sig[meth_row]
   U_meth  <- pca_M_final %>% select(all_of(as.numeric(U_M[[1]])))
   
