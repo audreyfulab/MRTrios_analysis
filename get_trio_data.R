@@ -134,12 +134,12 @@ df_trio_144897 <- get_trio_data(144897, trios, pos_meth_filter, pos_cna_filter,
                                 pos_age, pos_race)
 
 # some error running MGRN, need Define isTrue as it's missing from your environment
-# assign("isTrue", isTRUE, envir = .GlobalEnv)
+ assign("isTrue", isTRUE, envir = .GlobalEnv)
 
 # --- Use MRGN to find the trio belong to which model ----
 ### Find the model of the trio
 
-model_trio_144897 <- infer.trio(df_trio_144897)
+model_trio_144897 <- infer.trio(df_trio_144897,is.CNA = TRUE,compute.nominal=TRUE)
 
 
 
