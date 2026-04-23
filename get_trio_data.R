@@ -110,7 +110,7 @@ get_trio_data <- function(trio_row,
   df <- cbind(
     C      = t(C[, -1]),
     E      = t(E[, -1]),
-    M1     = t(M[, -1]),
+    M     = t(M[, -1]),
     pos_age,
     pos_race,
     U_exp,
@@ -118,7 +118,7 @@ get_trio_data <- function(trio_row,
   )
   
   df <- as.data.frame(df)
-  colnames(df)[1:4] <- c("C", "E", "M1", "M2")
+  colnames(df)[1:3] <- c("C", "E", "M")
   df$pos_race <- as.factor(df$pos_race)
   
   return(df)
