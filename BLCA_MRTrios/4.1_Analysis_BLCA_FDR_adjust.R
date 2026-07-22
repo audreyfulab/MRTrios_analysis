@@ -39,7 +39,7 @@ BLCA_Model$`pV1:T2_qval` <- qobj_3$qvalues[(n+1):(2*n)]
 
 # ── Re-infer binary indicators ─────────────────────────────
 alpha <- 0.05
-BLCA_Model$b11_qval    <- as.integer(LZ_final_pos_model$pb11_qval    < alpha)
+BLCA_Model$b11_qval    <- as.integer(BLCA_Model$pb11_qval    < alpha)
 BLCA_Model$b12_qval    <- as.integer(BLCA_Model$pb12_qval    < alpha)
 BLCA_Model$b21_qval    <- as.integer(BLCA_Model$pb21_qval    < alpha)
 BLCA_Model$b22_qval    <- as.integer(BLCA_Model$pb22_qval    < alpha)
