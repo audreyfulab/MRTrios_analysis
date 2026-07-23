@@ -61,7 +61,7 @@ LIHC.cna <- fread("lihc_tcga_pan_can_atlas_2018/data_cna.txt")
 LIHC.cna <- prep_dataset(LIHC.cna, id_col = "cna.row", sample_col_start = 3)
 
 ## ---- Trios ---------------------------------------------------------------
-trios <- as.data.frame(fread("trio.final.protein.coding.txt"))
+trios <- as.data.frame(fread("trio.final.final.protein.coding.txt"))
 
 ## ---- Clinical ---------------------------------------------------------
 clinical.LIHC <- fread("split_new_data_clinical_patient.txt")
