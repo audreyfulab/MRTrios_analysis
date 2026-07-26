@@ -13,7 +13,7 @@ The scripts should be used in the following order:
 - `5_Infer_trio_models.R`: Calculate all trios causal models, Loop over all trios and collect results( combined the trios with models info).
 - `5_main.analyzeTrios.R`: this file performs causal network inference for trios and their associated confounders (i.e., PCs) to infer the causal models.    
 - `7_GOanalysis.R`: this file performs the gene ontology (GO) enrichment analysis for the mediation trios.
-
+- `8_PostProcessingTRIOS.R`: this script builds ER+/ER- CNA-methylation-gene expression trio datasets by matching patient IDs across raw data and PCA files, then generates scatter/boxplot visualizations with correlation values for each of the eight causal inference models (M0.1, M0.2, M1.1, M1.2, M2.1, M2.2, M3, M4, and Other).
 
 Additional scripts may be used for debugging:
 - `6_model loc data extract.R`: this file extracts row numbers in the trio data matrix when a specific model type and location (e.g., TSS1500, body, 3' UTR, etc.) of a gene is provided.
