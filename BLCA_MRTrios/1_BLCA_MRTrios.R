@@ -370,7 +370,7 @@ for (b in seq_along(batch_starts)) {
   start    <- batch_starts[b]
   end      <- min(start + batch_size - 1, part_end)
   out_file <- file.path(output_dir,
-                        sprintf("trio_results_part%02d_shard_%04d.txt", part_id, b))
+                        sprintf("trio_BLCA_results_part%02d_shard_%04d.txt", part_id, b))
 
   if (file.exists(out_file)) {
     cat(sprintf("[Part %02d | Batch %d / %d] Already exists, skipping.\n",
