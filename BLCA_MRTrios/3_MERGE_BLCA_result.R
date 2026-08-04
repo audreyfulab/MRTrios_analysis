@@ -5,7 +5,7 @@ output_dir <- "/wsu/home/hb/hb68/hb6890/fulab/MRTrios/Output_BLCA"
 
 # ── Find all shard files (exclude merged ALL file) ─────────
 shard_files <- sort(list.files(input_dir,
-                               pattern = "trio_results_part.*\\.txt",
+                               pattern = "trio_BLCA_results_part.*\\.txt",
                                full.names = TRUE))
 
 cat(sprintf("Found %d shard files. Merging...\n", length(shard_files)))
