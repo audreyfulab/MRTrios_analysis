@@ -114,3 +114,30 @@ fwrite(Model_posER_BRCA,
        sep  = "\t")
 
 ########################################################################################
+#######################################
+### 500 trios (29551:30050) Output 
+#######################################
+
+> # ── Compare all three methods ──────────────────────────────
+> cat("Original:\n");    print(table(Model_posER_BRCA$Inferred.Model))
+Original:
+
+ M0.1  M0.2  M1.1  M1.2  M2.1    M3    M4 Other 
+  152    18    47    17    25   123    33    85 
+> cat("\nBH (FDR):\n");  print(table(Model_posER_BRCA$Inferred.Model.BH_fdr))
+
+BH (FDR):
+
+ M0.1  M0.2  M1.1  M1.2  M2.1  M2.2    M3    M4 Other 
+  126    21    48    17    27     1   144    52    64 
+> cat("\nqvalue:\n");    print(table(Model_posER_BRCA$Inferred.Model.qval))
+
+qvalue:
+
+ M0.1  M0.2  M1.1  M1.2  M2.1  M2.2    M3    M4 Other 
+   67     8    43     9    38     1   206   118    10 
+
+> table(Model_posER_BRCA$Confounders)
+
+age|race|U_exp|U_meth 
+                  500
