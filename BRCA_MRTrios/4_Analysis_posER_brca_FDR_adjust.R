@@ -141,3 +141,38 @@ qvalue:
 
 age|race|U_exp|U_meth 
                   500
+
+# ==========================================================
+# # 08/07/26 Fri: Ondemand done with
+# array 10: 1-58
+# array 1/2/6/7:1-56
+# array 5/8: 1-54
+# array 4: 1-52
+# array 3 : 1-55
+# ==== Merge above parts:
+## 496 shard files:
+## Total rows: 245899 | Total cols: 24
+# ==========================================================
+
+> # ── Compare all three methods ──────────────────────────────
+> cat("Original:\n");    print(table(Model_posER_BRCA$Inferred.Model))
+Original:
+
+ M0.1  M0.2  M1.1  M1.2  M2.1  M2.2    M3    M4 Other 
+67159 16432 29986  6566  7583  1939 38421 14868 62945 
+> cat("\nBH (FDR):\n");  print(table(Model_posER_BRCA$Inferred.Model.BH_fdr))
+
+BH (FDR):
+
+ M0.1  M0.2  M1.1  M1.2  M2.1  M2.2    M3    M4 Other 
+59368 17131 32178  7941  9738  2757 45143 20997 50646 
+> cat("\nqvalue:\n");    print(table(Model_posER_BRCA$Inferred.Model.qval))
+
+qvalue:
+
+ M0.1  M0.2  M1.1  M1.2  M2.1  M2.2    M3    M4 Other 
+41848 16106 33786 10056 13569  4461 57184 39228 29661
+
+# > table(Model_posER_BRCA$Confounders)
+age|race|U_exp|U_meth       age|race|U_meth 
+               245763                   136
