@@ -21,3 +21,17 @@ out_file <- file.path(output_dir, "trio_posER_BRCA_results_ALL.txt")
 fwrite(all_results, file = out_file, sep = "\t")
 
 cat(sprintf("Saved: %s\n", out_file))
+
+
+# ==========================================================
+## Merge info:
+# # 08/07/26 Fri: Ondemand done with
+# array 10: 1-58
+# array 1/2/6/7:1-56
+# array 5/8: 1-54
+# array 4: 1-52
+# array 3 : 1-55
+# ==== Merge above parts:
+## 496 shard files:
+## Total rows: 245899 | Total cols: 24
+# ==========================================================
