@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=MRTrios_BLCA
-#SBATCH --output=/wsu/home/hb/hb68/hb6890/fulab/MRTrios/logs/BLCA_MRTrios_part%a_%j.out
-#SBATCH --error=/wsu/home/hb/hb68/hb6890/fulab/MRTrios/logs/BLCA_MRTrios_part%a_%j.err
+#SBATCH --output=/wsu/home/hb/hb68/hb6890/fulab/MRTrios/logs_BLCA_MRTrios/BLCA_MRTrios_part%a_%j.out
+#SBATCH --error=/wsu/home/hb/hb68/hb6890/fulab/MRTrios/logs_BLCA_MRTrios/BLCA_MRTrios_part%a_%j.err
 #SBATCH --partition=prip
 #SBATCH --qos=primary
 #SBATCH --nodes=1
@@ -11,7 +11,7 @@
 #SBATCH --array=1-10
 
 # ── Create directories ─────────────────────────────────────
-mkdir -p /wsu/home/hb/hb68/hb6890/fulab/MRTrios/logs
+mkdir -p /wsu/home/hb/hb68/hb6890/fulab/MRTrios/logs_BLCA_MRTrios
 mkdir -p /wsu/home/hb/hb68/hb6890/fulab/MRTrios/Output_BLCA
 
 # ── Load modules ───────────────────────────────────────────
@@ -35,9 +35,12 @@ echo "Start time : $(date)"
 echo "========================================"
 
 # ── Run R script ─────────────────────────────────────
-Rscript /wsu/home/hb/hb68/hb6890/fulab/MRTrios/Code/Code_BLCA_MRTrios/BLCA_MRTrios.R \
+Rscript /wsu/home/hb/hb68/hb6890/fulab/MRTrios/Code/Code_BLCA_MRTrios/blca_MRTrios.R \
 $SLURM_ARRAY_TASK_ID 10
 
 echo "========================================"
 echo "Part $SLURM_ARRAY_TASK_ID finished: $(date)"
 echo "========================================"
+
+
+
