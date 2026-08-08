@@ -305,6 +305,29 @@ get_trio_models <- function(trio_row, trios, preprocessed) {
       used_confounders <- c(used_confounders, "U_meth")
     }
 
+    # ── Guard against confounder factors collapsing to 1 level ──
+    # infer.trio() does its own internal NA/row filtering before
+    # fitting the model. If that filtering happens to leave only one
+    # category of a factor confounder (sex or race) among the
+    # retained samples for THIS trio's C/E/M data, R's model-fitting
+    # code throws "contrasts can be applied only to factors with 2 or
+    # more levels". This is a per-trio data issue, not a bug — but it
+    # must not be allowed to propagate, because a single such trio
+    # would otherwise abort the whole do.call(rbind, lapply(...))
+    # batch and take every other (successful) trio in the batch down
+    # with it. (This is what silently dropped the posER_BRCA
+    # part10/shard0057 output — trio 294363's race confounder
+    # collapsed to 1 level and the resulting error killed the entire
+    # 500-trio batch.)
+    for (fac in c("sex", "race")) {
+      if (fac %in% used_confounders && length(unique(na.omit(df_trio[[fac]]))) < 2) {
+        cat(sprintf("  [WARN] trio %d: %s has < 2 levels after filtering; dropping %s from confounders.\n",
+                    i, fac, fac))
+        df_trio[[fac]] <- NULL
+        used_confounders <- setdiff(used_confounders, fac)
+      }
+    }
+
     if (length(used_confounders) == 0) {
       cat(sprintf("  [INFO] trio %d: no confounders available; running infer.trio() on C/E/M only.\n", i))
     } else {
@@ -312,8 +335,22 @@ get_trio_models <- function(trio_row, trios, preprocessed) {
                   i, paste(used_confounders, collapse = ", ")))
     }
 
-    model <- as.data.frame(infer.trio(df_trio, is.CNA = TRUE, compute.nominal = FALSE,
-                                      use.perm = TRUE))
+    # ── Per-trio error isolation ─────────────────────────────
+    # infer.trio() can still fail for reasons not caught above (e.g.
+    # rank-deficient design after MRGN's own internal filtering, or
+    # other data idiosyncrasies for this specific trio). Catch the
+    # error HERE, per trio, and return NULL for just this one row —
+    # NOT at the batch level — so one bad trio never nukes the other
+    # ~499 successful trios in the same shard/batch.
+    model <- tryCatch(
+      as.data.frame(infer.trio(df_trio, is.CNA = TRUE, compute.nominal = FALSE,
+                                use.perm = TRUE)),
+      error = function(e) {
+        cat(sprintf("  [WARN] trio %d: infer.trio() failed (%s); skipping trio.\n", i, e$message))
+        NULL
+      }
+    )
+    if (is.null(model)) return(NULL)
 
     cbind(
       data.frame(
