@@ -62,3 +62,9 @@ cat(sprintf("Saved: %s\n", out_file))
 
 ## Saved: /Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BLCA/Output_BLCA/trio_results_BLCA_ALL.txt
 
+# table(all_results$Confounders)
+
+##             age|sex|race        age|sex|race|U_exp      age|sex|race|U_exp|U_meth    age|sex|race|U_meth
+                        4                      1605                    305106                1690 
+
+                    
