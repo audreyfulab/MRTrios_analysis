@@ -2,10 +2,9 @@
 ###################      FDR    ########################################################
 ########################################################################################
 
-BLCA_Model <- fread("/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_analysis/Output_BLCA/trio_results_BLCA_ALL.txt",sep ="\t")
-
+BLCA_Model <- fread("/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BLCA/Output_BLCA/trio_results_BLCA_ALL.txt",sep ="\t")
 ## ── BLCA model FDR ──────────────────────────────────────────────────
-output_dir ="/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_analysis/output_BLCA/"
+output_dir ="/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BLCA/Output_BLCA/"
 
 # ── Install if needed ──────────────────────────────────────
 if (!requireNamespace("qvalue", quietly = TRUE)) {
