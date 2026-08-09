@@ -9,7 +9,7 @@
 Model_posER_BRCA <- fread("/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BRCA/Output_posER_BRCA/trio_posER_BRCA_results_ALL.txt", sep = "\t")
 
 ## ── Pos model FDR ──────────────────────────────────────────────────
-output_dir = "/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BLCA/Output_posER_BRCA/"
+output_dir = "/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BRCA/Output_posER_BRCA/"
 
 # ── Install if needed ──────────────────────────────────────
 if (!requireNamespace("qvalue", quietly = TRUE)) {
