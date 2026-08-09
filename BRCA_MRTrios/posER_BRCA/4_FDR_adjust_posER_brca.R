@@ -6,11 +6,10 @@
 ### ADD BH p.ajust
 ########################################################################################
 
-
-Model_posER_BRCA <- fread("/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_analysis/output_Data_2026/trio_posER_BRCA_results_ALL.txt", sep = "\t")
+Model_posER_BRCA <- fread("/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BRCA/Output_posER_BRCA/trio_posER_BRCA_results_ALL.txt", sep = "\t")
 
 ## ── Pos model FDR ──────────────────────────────────────────────────
-output_dir = "/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_analysis/output_Data_2026/"
+output_dir = "/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BLCA/Output_posER_BRCA/"
 
 # ── Install if needed ──────────────────────────────────────
 if (!requireNamespace("qvalue", quietly = TRUE)) {
@@ -113,66 +112,26 @@ fwrite(Model_posER_BRCA,
        file = file.path(output_dir, "posER_BRCA_trio_Model_results_ALL_with_BH_fdr_qval_byLZ.txt"),
        sep  = "\t")
 
-########################################################################################
 #######################################
-### 500 trios (29551:30050) Output 
+# Compare Output 
 #######################################
 
-> # ── Compare all three methods ──────────────────────────────
-> cat("Original:\n");    print(table(Model_posER_BRCA$Inferred.Model))
-Original:
+## ── Compare all three methods ──────────────────────────────
 
- M0.1  M0.2  M1.1  M1.2  M2.1    M3    M4 Other 
-  152    18    47    17    25   123    33    85 
-> cat("\nBH (FDR):\n");  print(table(Model_posER_BRCA$Inferred.Model.BH_fdr))
+# ======= Original (Model_posER_BRCA$Inferred.Model) ======= 
+#   M0.1     M0.2     M1.1     M1.2       M2.1      M2.2        M3         M4       Other 
+# 80300     19564     35442    7769      8827       2252       46153     17839      74379 
 
-BH (FDR):
+# ======= BH (FDR) (table(Model_posER_BRCA$Inferred.Model.BH_fdr)) =======
+#   M0.1     M0.2     M1.1     M1.2       M2.1      M2.2        M3         M4       Other 
+#  70838    20469    38202     9426       11319     3232      54186      25096      59757 
 
- M0.1  M0.2  M1.1  M1.2  M2.1  M2.2    M3    M4 Other 
-  126    21    48    17    27     1   144    52    64 
-> cat("\nqvalue:\n");    print(table(Model_posER_BRCA$Inferred.Model.qval))
+# ======= qvalue (table(Model_posER_BRCA$Inferred.Model.qval)) =======
+#   M0.1     M0.2     M1.1     M1.2       M2.1      M2.2        M3         M4       Other  
+#   49805   19282    40037    11883      15846      5266       68741     46838      34827
 
-qvalue:
+## ── Confounders  ──────────────────────────────
 
- M0.1  M0.2  M1.1  M1.2  M2.1  M2.2    M3    M4 Other 
-   67     8    43     9    38     1   206   118    10 
-
-> table(Model_posER_BRCA$Confounders)
-
-age|race|U_exp|U_meth 
-                  500
-
-# ==========================================================
-# # 08/07/26 Fri: Ondemand done with
-# array 10: 1-58
-# array 1/2/6/7:1-56
-# array 5/8: 1-54
-# array 4: 1-52
-# array 3 : 1-55
-# ==== Merge above parts:
-## 496 shard files:
-## Total rows: 245899 | Total cols: 24
-# ==========================================================
-
-> # ── Compare all three methods ──────────────────────────────
-> cat("Original:\n");    print(table(Model_posER_BRCA$Inferred.Model))
-Original:
-
- M0.1  M0.2  M1.1  M1.2  M2.1  M2.2    M3    M4 Other 
-67159 16432 29986  6566  7583  1939 38421 14868 62945 
-> cat("\nBH (FDR):\n");  print(table(Model_posER_BRCA$Inferred.Model.BH_fdr))
-
-BH (FDR):
-
- M0.1  M0.2  M1.1  M1.2  M2.1  M2.2    M3    M4 Other 
-59368 17131 32178  7941  9738  2757 45143 20997 50646 
-> cat("\nqvalue:\n");    print(table(Model_posER_BRCA$Inferred.Model.qval))
-
-qvalue:
-
- M0.1  M0.2  M1.1  M1.2  M2.1  M2.2    M3    M4 Other 
-41848 16106 33786 10056 13569  4461 57184 39228 29661
-
-# > table(Model_posER_BRCA$Confounders)
-age|race|U_exp|U_meth       age|race|U_meth 
-               245763                   136
+#  table(Model_posER_BRCA$Confounders)
+# age|race|U_exp|U_meth       age|race|U_meth 
+#               292372                   153
