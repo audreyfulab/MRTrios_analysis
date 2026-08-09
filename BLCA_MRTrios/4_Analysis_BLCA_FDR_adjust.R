@@ -107,4 +107,41 @@ fwrite(BLCA_Model,
        file = file.path(output_dir, "BLCA_trio_Model_results_ALL_with_BH_fdr_qval_byLZ.txt"),
        sep  = "\t")
 
-########################################################################################
+# ── Check Confounders categoriers ─────────────────────────────────────────────────── 
+table(BLCA_Model$Confounders)
+
+###################################################################################################################################
+## BLCA_Model:
+## Saved: /Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BLCA/Output_BLCA/BLCA_trio_Model_results_ALL_with_BH_fdr_qval_byLZ.txt
+###################################################################################################################################
+#
+#  OUTPUT INFO 
+####################################################
+
+# ── Compare all three methods ──────────────────────────────
+# cat("Original:\n");    print(table(BLCA_Model$Inferred.Model))
+# Original:
+
+# M0.1     M0.2     M1.1     M1.2     M2.1    M2.2    M3       M4       Other 
+# 94588   15541    37606     8697     9987    2486   44780    11042     83678 
+
+#cat("\nBH (FDR):\n");  print(table(BLCA_Model$Inferred.Model.BH_fdr))
+
+#BH (FDR):
+
+# M0.1     M0.2     M1.1     M1.2     M2.1    M2.2    M3       M4       Other  
+# 83391   16751    41195    10539    13062     4080   54285   16994     68108 
+
+# cat("\nqvalue:\n");    print(table(BLCA_Model$Inferred.Model.qval))
+
+#qvalue:
+
+# M0.1     M0.2     M1.1     M1.2     M2.1    M2.2    M3       M4       Other 
+# 58414    16083    43900    13325    19364    7615   72616   37270    39818
+
+# table(BLCA_Model$Confounders)
+
+#   age|sex|race        age|sex|race|U_exp      age|sex|race|U_exp|U_meth         age|sex|race|U_meth
+       4                      1605                    305106                   1690  
+       
+                     
