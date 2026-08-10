@@ -3,10 +3,10 @@
 # ========================================================================================================
 
 ## Without FDR
-Model_posER_BRCA <- fread("/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_analysis/output_Data_2026/trio_posER_BRCA_results_ALL.txt")
+Model_posER_BRCA <- fread("/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BRCA/Output_posER_BRCA/trio_posER_BRCA_results_ALL.txt")
 
 ## With FDR
-Model_posER_BRCA <- fread("/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_analysis/output_Data_2026/posER_BRCA_trio_Model_results_ALL_with_BH_fdr_qval_byLZ.txt")
+Model_posER_BRCA <- fread("/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BRCA/Output_posER_BRCA/posER_BRCA_trio_Model_results_ALL_with_BH_fdr_qval_byLZ.txt")
 
 # ========================================================================================================
 # Figure out which trios Failed to infer models (C,E,M data Missing from raw data)
