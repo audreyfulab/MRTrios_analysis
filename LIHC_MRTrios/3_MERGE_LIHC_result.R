@@ -27,3 +27,19 @@ fwrite(all_results, file = out_file, sep = "\t")
 
 cat(sprintf("Saved: %s\n", out_file))
 
+
+# ── OUTPUT INFO: ──────────────────────────────────────────────────────────────────
+
+# ───────────────────────────────────────────────────────────────────────────────────────────────────────
+#Found 620 shard files. Merging...
+#Total rows: 308028 | Total cols: 24
+#Saved: /Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_LIHC/Output_LIHC/trio_results_LIHC_ALL.txt
+
+# table(all_results$Confounders)
+ age|sex|race        age|sex|race|U_exp    age|sex|race|U_exp|U_meth       age|sex|race|U_meth
+   13                      2416                    302983                     2616
+
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
