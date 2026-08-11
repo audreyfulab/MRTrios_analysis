@@ -133,6 +133,10 @@ pos_df_2 <- pos_df %>%
 final_file <- file.path(out_dir, "LZ_trio_results_pos_ALL_with_BH_fdr_qval_with_location.txt")
 fwrite(pos_df_2, final_file, sep = "\t", quote = FALSE, row.names = FALSE, col.names = TRUE)
 
+# .rds file save space
+final_file <- file.path(out_dir, "LZ_trio_results_pos_ALL_with_BH_fdr_qval_with_location.rds")
+saveRDS(pos_df_2, final_file, compress = "xz")
+
 cat(sprintf("Done. Final file: %s (%d rows)\n", final_file, nrow(pos_df_2)))
 
 ## Final file: /Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BRCA/Output_posER_BRCA/LZ_trio_results_pos_ALL_with_BH_fdr_qval_with_location.txt (675071 rows)
