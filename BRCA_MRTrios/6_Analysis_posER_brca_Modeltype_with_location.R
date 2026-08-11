@@ -14,6 +14,9 @@ raw_dir    <- "/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_analysis/raw_Data
 out_dir    <- "/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BRCA/Output_posER_BRCA"
 model_file <- "/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BRCA/Output_posER_BRCA/posER_BRCA_trio_Model_results_ALL_with_BH_fdr_qval_byLZ.txt"
 
+negER_model_file <- "/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BRCA/Output_negER_BRCA/negER_BRCA_trio_Model_results_ALL_with_BH_fdr_qval_byLZ.txt"
+
+
 # NOTE: filename below says "v.1.1" but the original script's comments
 # describe switching to a "v1.2" manifest to get a full Name match
 # (0 mismatches instead of 29,462). Worth double-checking this is
@@ -130,13 +133,65 @@ pos_df_2 <- pos_df %>%
 # ============================================================
 # Step 7: Save final annotated results
 # ============================================================
-final_file <- file.path(out_dir, "LZ_trio_results_pos_ALL_with_BH_fdr_qval_with_location.txt")
-fwrite(pos_df_2, final_file, sep = "\t", quote = FALSE, row.names = FALSE, col.names = TRUE)
+# final_file <- file.path(out_dir, "LZ_trio_results_pos_ALL_with_BH_fdr_qval_with_location.txt")
+# fwrite(pos_df_2, final_file, sep = "\t", quote = FALSE, row.names = FALSE, col.names = TRUE)
 
-# .rds file save space
 final_file <- file.path(out_dir, "LZ_trio_results_pos_ALL_with_BH_fdr_qval_with_location.rds")
 saveRDS(pos_df_2, final_file, compress = "xz")
 
 cat(sprintf("Done. Final file: %s (%d rows)\n", final_file, nrow(pos_df_2)))
 
 ## Final file: /Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BRCA/Output_posER_BRCA/LZ_trio_results_pos_ALL_with_BH_fdr_qval_with_location.txt (675071 rows)
+
+
+# ============================================================
+# Step 5.2: Merge trio model results with CpG location
+# ============================================================
+Model_negER_BRCA <- fread(negER_model_file, sep = "\t", data.table = FALSE)
+
+negModel <- Model_negER_BRCA
+negModel$Inferred.Model3 <- negModel$Inferred.Model.BH_fdr
+
+n_model_rows <- nrow(negModel)
+
+merge_neg_df <- left_join(
+  negModel, loc,
+  by = c("trio_row" = "trios_row", "cna.row", "gene.row", "meth.row")
+)
+
+if (nrow(merge_neg_df) != n_model_rows) {
+  warning(sprintf(
+    "left_join changed row count: %d -> %d (check for duplicate keys in `loc`)",
+    n_model_rows, nrow(merge_neg_df)
+  ))
+}
+
+# One CpG can belong to multiple gene regions (semicolon-separated);
+# expand so each region gets its own row.
+neg_df <- merge_neg_df %>%
+  separate_rows(UCSC_RefGene_Group, sep = ";")
+
+# ============================================================
+# Step 6: Collapse the 6 UCSC_RefGene_Group categories into 3
+# ============================================================
+neg_df_2 <- neg_df %>%
+  mutate(Group = case_when(
+    UCSC_RefGene_Group %in% c("TSS200", "TSS1500") ~ "TSS",
+    UCSC_RefGene_Group %in% c("Body", "1stExon")    ~ "Body",
+    UCSC_RefGene_Group %in% c("3'UTR", "5'UTR")     ~ "5'/3'UTR",
+    TRUE ~ NA_character_   # includes blank/IGR (intergenic) entries
+  ))
+
+# ============================================================
+# Step 7: Save final annotated results
+# ============================================================
+out_dir    <- "/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BRCA/Output_negER_BRCA"
+
+final_file <- file.path(out_dir, "LZ_trio_results_neg_ALL_with_BH_fdr_qval_with_location.txt")
+fwrite(neg_df_2, final_file, sep = "\t", quote = FALSE, row.names = FALSE, col.names = TRUE)
+
+final_file <- file.path(out_dir, "LZ_trio_results_neg_ALL_with_BH_fdr_qval_with_location.rds")
+saveRDS(neg_df_2, final_file, compress = "xz")
+
+cat(sprintf("Done. Final file: %s (%d rows)\n", final_file, nrow(neg_df_2)))
+
