@@ -86,3 +86,147 @@ p01_2 <- ggplot(dat_m0_1, aes(x=factor(CNA), y=GE, color=factor(CNA)))+geom_boxp
 p01_3 <- ggplot(dat_m0_1, aes(x=factor(CNA), y=Meth))+geom_boxplot(aes(color=factor(CNA)))+theme_bw()+theme(legend.position="none",plot.title = element_text(size = 10),axis.title.x = element_text(size = 8),  axis.title.y = element_text(size = 8))+labs(title = 'M0.1 CNA v. Methylation', subtitle = "(r=0.120)",x = 'Copy Number Alternation', y = 'Methylation')
 (p01_1)/(p01_2|p01_3)
 ggsave("Pos_M0.1.pdf")
+
+
+##  read the saved filter cna,exp,meth data
+setwd("/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_analysis/output_Data_2026")
+cna_filter <- fread("pos_cna.txt")
+exp_filter <- fread("pos_exp.txt")
+meth_filter <- fread("pos_meth.txt")
+
+# ── Paths (defined once) ──────────────────────────────────────────────────────
+DATA_DIR <- "/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BRCA"
+RAW_DIR  <- "/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_analysis/raw_Data_Methyl"
+FIG_DIR  <- "/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BRCA/Figure"
+
+# ── Load model results (loaded once) ─────────────────────────────────────────
+model_pos     <- fread(file.path(DATA_DIR, "Output_posER_BRCA/posER_BRCA_trio_Model_results_ALL_with_BH_fdr_qval_byLZ.txt"))
+model_neg     <- fread(file.path(DATA_DIR, "Output_negER_BRCA/negER_BRCA_trio_Model_results_ALL_with_BH_fdr_qval_byLZ.txt"))
+model_pos_loc <- readRDS(file.path(DATA_DIR, "Output_posER_BRCA/LZ_trio_results_pos_ALL_with_BH_fdr_qval_with_location.rds"))
+model_neg_loc <- readRDS(file.path(DATA_DIR, "Output_negER_BRCA/LZ_trio_results_neg_ALL_with_BH_fdr_qval_with_location.rds"))
+
+
+## M1.1
+### trio: 135939 : 4 infer model are M1.1
+model_pos %>% filter(trio_row==135939)
+
+trio_df <- data.frame(CNA=unlist(cna_filter %>% filter(cna.row==model_pos %>% filter(trio_row==135939) %>% pull(cna.row)) %>% select(-cna.row)),
+                       Meth=unlist(meth_filter %>% filter(meth.row==model_pos %>% filter(trio_row==135939) %>% pull(meth.row)) %>% select(-meth.row)),
+                       GE=unlist(exp_filter %>% filter(gene.row==model_pos %>% filter(trio_row==135939) %>% pull(gene.row)) %>% select(-gene.row)))
+
+dim(trio_df)
+cor(trio_df$GE,trio_df$Meth)
+cor(trio_df$CNA,trio_df$GE)
+cor(trio_df$CNA,trio_df$Meth)
+
+# cor(trio_df$GE,trio_df$Meth)  -0.6762893
+# cor(trio_df$CNA,trio_df$GE)    0.08559773
+# cor(trio_df$CNA,trio_df$Meth)  0.02036697
+
+# Scatterplot GE & Meth
+p01_1=ggplot(trio_df,aes(GE,Meth))+geom_point(aes(color=factor(CNA)))+theme_bw()+theme(legend.position="none",plot.title = element_text(size = 10),axis.title.x = element_text(size = 8),  axis.title.y = element_text(size = 8))+labs(title = 'M0.1 Gene Expression v. Methylation',subtitle = "(r=-0.6762893)", x= 'Gene Expression', y = 'Methylation')
+#Boxplot CNA & GE
+p01_2 <- ggplot(trio_df, aes(x=factor(CNA), y=GE, color=factor(CNA)))+geom_boxplot()+theme_bw()+theme(legend.position="none",plot.title = element_text(size = 10),axis.title.x = element_text(size = 8), axis.title.y = element_text(size = 8))+labs(title = 'M0.1 CNA v. GE', subtitle = "(r=0.08559773)",x = 'Copy Number Alternation', y = 'Gene Expression')
+# Boxplot CNA & Meth
+p01_3 <- ggplot(trio_df, aes(x=factor(CNA), y=Meth))+geom_boxplot(aes(color=factor(CNA)))+theme_bw()+theme(legend.position="none",plot.title = element_text(size = 10),axis.title.x = element_text(size = 8),  axis.title.y = element_text(size = 8))+labs(title = 'M0.1 CNA v. Methylation', subtitle = "(r=0.02036697)",x = 'Copy Number Alternation', y = 'Methylation')
+(p01_1)/(p01_2|p01_3)
+ggsave("Pos_M1.1.pdf")
+
+# ====================================== Noconfounder models ======================================================
+
+library(data.table)
+
+
+## Local path:
+input_dir <- "/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BRCA/NoConfounder_Output_posER_BRCA_part"
+output_dir <- "/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BRCA/Output_posER_BRCA"
+
+# ── Find all shard files (exclude merged ALL file) ─────────
+shard_files <- sort(list.files(input_dir,
+                               pattern = "NoConfounder_trio_posER_BRCA_results_part.*\\.txt",
+                               full.names = TRUE))
+
+cat(sprintf("Found %d shard files. Merging...\n", length(shard_files)))
+##  599 shard files : missing part57
+
+# ── Merge all shards ───────────────────────────────────────
+all_results <- rbindlist(lapply(shard_files, fread), fill = TRUE)
+
+cat(sprintf("Total rows: %d | Total cols: %d\n",
+            nrow(all_results), ncol(all_results)))
+
+## Total rows: 292043 | Total cols: 25
+
+# ── Save merged file ───────────────────────────────────────
+out_file <- file.path(output_dir, "NoConfounder_trio_posER_BRCA_results_ALL_missPart57.txt")
+fwrite(all_results, file = out_file, sep = "\t")
+
+cat(sprintf("Saved: %s\n", out_file))
+
+
+## 
+Noconfounder_pos2 <- fread("/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BRCA/Output_posER_BRCA/NoConfounder_trio_posER_BRCA_results_ALL_missPart57.txt")
+
+Noconfounder_pos2_filter <- Noconfounder_pos2 %>% mutate(InferModel_Noconfounder2=Inferred.Model) %>% select(trio_row,cor_CNA_Exp,cor_CNA_Meth,cor_Exp_Meth,InferModel_Noconfounder2) 
+
+model_po2_loc_full <- Noconfounder_pos2_filter %>% left_join(model_pos_loc,by="trio_row")
+
+m1.1_interset2 <- model_po2_loc_full %>% filter(Inferred.Model=="M1.1",Inferred.Model.BH_fdr=="M1.1",Inferred.Model.qval=="M1.1",InferModel_Noconfounder2=="M1.1")
+
+m1.1_interset2_filter <- m1.1_interset2 %>% select(trio_row,cna.row,gene.row,meth.row,Total.PC.Count,Confounders,Inferred.Model,Inferred.Model.BH_fdr,Inferred.Model.qval,InferModel_Noconfounder2,Name,Gene.name,UCSC_RefGene_Group,Group,cor_CNA_Exp,cor_CNA_Meth,cor_Exp_Meth) %>% distinct()
+
+dff <- m1.1_interset2_filter %>% select(-c(UCSC_RefGene_Group,Group)) %>% distinct()
+
+dff2=dff %>% filter(abs(cor_CNA_Exp) < abs(cor_Exp_Meth)) %>%
+  arrange(desc(abs(cor_Exp_Meth) - abs(cor_CNA_Exp)))
+## 4430 rows
+
+# ================================================ Noconfounder models  com id with clinical ======================================================
+
+library(data.table)
+
+
+## Local path:
+input_dir <- "/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BRCA/NoConfounder_Clinical_Output_posER_BRCA_part"
+output_dir <- "/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BRCA/Output_posER_BRCA"
+
+# ── Find all shard files (exclude merged ALL file) ─────────
+shard_files <- sort(list.files(input_dir,
+                               pattern = "NoConfounder_Clinical_trio_posER_BRCA_results_part.*\\.txt",
+                               full.names = TRUE))
+
+cat(sprintf("Found %d shard files. Merging...\n", length(shard_files)))
+##  599 shard files : missing part57
+
+# ── Merge all shards ───────────────────────────────────────
+all_results <- rbindlist(lapply(shard_files, fread), fill = TRUE)
+
+cat(sprintf("Total rows: %d | Total cols: %d\n",
+            nrow(all_results), ncol(all_results)))
+
+## Total rows: 292043 | Total cols: 25
+
+# ── Save merged file ───────────────────────────────────────
+out_file <- file.path(output_dir, "NoConfounder_Clinical_trio_posER_BRCA_results_ALL_missPart57.txt")
+fwrite(all_results, file = out_file, sep = "\t")
+
+cat(sprintf("Saved: %s\n", out_file))
+
+
+## 
+Noconfounder_pos <- fread("/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BRCA/Output_posER_BRCA/NoConfounder_Clinical_trio_posER_BRCA_results_ALL_missPart57.txt")
+
+Noconfounder_pos_filter <- Noconfounder_pos %>% mutate(InferModel_Noconfounder=Inferred.Model) %>% select(trio_row,cor_CNA_Exp,cor_CNA_Meth,cor_Exp_Meth,InferModel_Noconfounder) 
+
+model_pos_loc_full <- model_pos_loc %>% left_join(Noconfounder_pos_filter,by="trio_row")
+
+m1.1_interset <- model_pos_loc_full %>% filter(Inferred.Model=="M1.1",Inferred.Model.BH_fdr=="M1.1",Inferred.Model.qval=="M1.1",InferModel_Noconfounder=="M1.1")
+
+m1.1_interset_filter <- m1.1_interset %>% select(trio_row,cna.row,gene.row,meth.row,Total.PC.Count,Confounders,Inferred.Model,Inferred.Model.BH_fdr,Inferred.Model.qval,InferModel_Noconfounder,Name,Gene.name,UCSC_RefGene_Group,Group,cor_CNA_Exp,cor_CNA_Meth,cor_Exp_Meth) %>% distinct()
+
+df <- m1.1_interset_filter %>% select(-c(UCSC_RefGene_Group,Group)) %>% distinct()
+
+df2=df %>% filter(abs(cor_CNA_Exp) < abs(cor_Exp_Meth)) %>%
+  arrange(desc(abs(cor_Exp_Meth) - abs(cor_CNA_Exp)))
+
+# ==================================================================================================================================================================
