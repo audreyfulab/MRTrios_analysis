@@ -382,7 +382,35 @@ p01_3 <- ggplot(trio_df, aes(x=factor(CNA), y=Meth))+geom_boxplot(aes(color=fact
 
 
 
+# ==================================================================================================================================================================
 
+# MRGN inferred raw and adjusted models are all M1.1
+m1.1_interset <- model_pos_loc_full %>% filter(Inferred.Model=="M1.1",Inferred.Model.BH_fdr=="M1.1",Inferred.Model.qval=="M1.1")
+
+m1.1_interset_filter <- m1.1_interset %>% select(trio_row,cna.row,gene.row,meth.row,Total.PC.Count,Confounders,Inferred.Model,Inferred.Model.BH_fdr,Inferred.Model.qval,InferModel_Noconfounder,Name,Gene.name,UCSC_RefGene_Group,Group,cor_CNA_Exp,cor_CNA_Meth,cor_Exp_Meth) %>% distinct()
+df_m1.1 <- m1.1_interset_filter %>% select(-c(UCSC_RefGene_Group,Group)) %>% distinct()
+
+table(df_m1.1$InferModel_Noconfounder)
+
+# M0.1  M0.2  M1.1  M1.2  M2.1  M2.2    M3    M4 Other 
+# 4540    48 11497   164   670    15  1070   680  3152 
+# length(unique(df_m1.1$trio_row))
+# 21864
+
+# ==================================================================================================================================================================
+
+# MRGN inferred raw and adjusted models are all M1.2
+m1.2_interset <- model_pos_loc_full %>% filter(Inferred.Model=="M1.2",Inferred.Model.BH_fdr=="M1.2",Inferred.Model.qval=="M1.2")
+
+m1.2_interset_filter <- m1.2_interset %>% select(trio_row,cna.row,gene.row,meth.row,Total.PC.Count,Confounders,Inferred.Model,Inferred.Model.BH_fdr,Inferred.Model.qval,InferModel_Noconfounder,Name,Gene.name,UCSC_RefGene_Group,Group,cor_CNA_Exp,cor_CNA_Meth,cor_Exp_Meth) %>% distinct()
+df_m1.2 <- m1.2_interset_filter %>% select(-c(UCSC_RefGene_Group,Group)) %>% distinct()
+
+table(df_m1.2$InferModel_Noconfounder)
+# M0.1  M0.2  M1.1  M1.2  M2.1  M2.2    M3    M4 Other 
+# 41   384   196  1399    49    90   116   264  1432
+
+# length(unique(df_m1.2$trio_row))
+# 3989
 
 
 
