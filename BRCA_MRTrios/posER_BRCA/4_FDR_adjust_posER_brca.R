@@ -124,7 +124,8 @@ fwrite(Model_posER_BRCA,
 
 # ======= BH (FDR) (table(Model_posER_BRCA$Inferred.Model.BH_fdr)) =======
 #   M0.1     M0.2     M1.1     M1.2       M2.1      M2.2        M3         M4       Other 
-#  70838    20469    38202     9426       11319     3232      54186      25096      59757 
+#  70838    20469    38202     9426       11319     3232      54186      25096      59757  ( Count)
+#  0.242    0.070    0.131    0.032       0.039    0.011      0.185      0.086      0.204  ( percent)
 
 # ======= qvalue (table(Model_posER_BRCA$Inferred.Model.qval)) =======
 #   M0.1     M0.2     M1.1     M1.2       M2.1      M2.2        M3         M4       Other  
@@ -135,3 +136,10 @@ fwrite(Model_posER_BRCA,
 #  table(Model_posER_BRCA$Confounders)
 # age|race|U_exp|U_meth       age|race|U_meth 
 #               292372                   153
+
+# dat1=model_pos %>% filter(Confounders=="age|race|U_meth")
+# table(dat1$Inferred.Model.BH_fdr)
+
+# M0.1  M0.2    M3 Other 
+#   19    58    17    59 
+## Among the 153 rows with age|race|U_meth confounders models distribution as above, there are no M1 and M2 models
