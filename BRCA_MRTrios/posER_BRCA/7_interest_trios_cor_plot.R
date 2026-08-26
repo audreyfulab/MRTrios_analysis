@@ -412,5 +412,31 @@ table(df_m1.2$InferModel_Noconfounder)
 # length(unique(df_m1.2$trio_row))
 # 3989
 
+# ==================================================================================================================================================================
+# trio_76: posER_brca_M0.1_M0.2_byMRGN_vs_M3_M4_by_baycn
 
+trioRow=76
+# cor(C_E)
+
+## trio:76, MRGN_InferModel_raw = "M0.1",MRGN_InferModel.BH = "M0.1", baycn_InferModel="M3"
+trio_df <- data.frame(CNA=unlist(cna_filter %>% filter(cna.row==model_pos %>% filter(trio_row==trioRow) %>% pull(cna.row)) %>% select(-cna.row)),
+                      Meth=unlist(meth_filter %>% filter(meth.row==model_pos %>% filter(trio_row==trioRow) %>% pull(meth.row)) %>% select(-meth.row)),
+                      GE=unlist(exp_filter %>% filter(gene.row==model_pos %>% filter(trio_row==trioRow) %>% pull(gene.row)) %>% select(-gene.row)))
+
+dim(trio_df)
+cor(trio_df$GE,trio_df$Meth, use = "complete.obs") #0.1928472
+cor(trio_df$CNA,trio_df$GE, use = "complete.obs") #0.7435656
+cor(trio_df$CNA,trio_df$Meth, use = "complete.obs") #0.2120911
+
+# Scatterplot GE & Meth
+p01_1=ggplot(trio_df,aes(GE,Meth))+geom_point(aes(color=factor(CNA)))+theme_bw()+theme(legend.position="none",plot.title = element_text(size = 10),axis.title.x = element_text(size = 8),  axis.title.y = element_text(size = 8))+labs(title = 'M0.1 Gene Expression v. Methylation',subtitle = "(r= 0.1928)", x= 'Gene Expression', y = 'Methylation')
+#Boxplot CNA & GE
+p01_2 <- ggplot(trio_df, aes(x=factor(CNA), y=GE, color=factor(CNA)))+geom_boxplot()+theme_bw()+theme(legend.position="none",plot.title = element_text(size = 10),axis.title.x = element_text(size = 8), axis.title.y = element_text(size = 8))+labs(title = 'M0.1 CNA v. GE', subtitle = "(r= 0.7436)",x = 'Copy Number Alternation', y = 'Gene Expression')
+# Boxplot CNA & Meth
+p01_3 <- ggplot(trio_df, aes(x=factor(CNA), y=Meth))+geom_boxplot(aes(color=factor(CNA)))+theme_bw()+theme(legend.position="none",plot.title = element_text(size = 10),axis.title.x = element_text(size = 8),  axis.title.y = element_text(size = 8))+labs(title = 'M0.1 CNA v. Methylation', subtitle = "(r= 0.2121)",x = 'Copy Number Alternation', y = 'Methylation')
+(p01_1)/(p01_2|p01_3)
+
+## Saved: /Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BRCA/Figure/trio_76_posER_brca_M0.1_MRGN_baycn_M3.pdf
+
+# ==================================================================================================================================================================
 
