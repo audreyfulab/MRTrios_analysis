@@ -1,6 +1,17 @@
 library(data.table)
 library(tidyverse)
 
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## models for BLCA and LIHC:
+model_BLCA <- fread("/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BLCA/Output_BLCA/BLCA_trio_Model_result_baycns_ALL_with_BH_fdr_qval_byLZ.txt")
+model_LIHC <- fread("/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_LIHC/Output_LIHC/LIHC_trio_Model_result_baycns_ALL_with_BH_fdr_qval_byLZ.txt")
+
+table(model_BLCA$Inferred.Model.BH_fdr)/sum(table(model_BLCA$Inferred.Model.BH_fdr))
+table(model_LIHC$Inferred.Model.BH_fdr)/sum(table(model_LIHC$Inferred.Model.BH_fdr))
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+## models for posER BRCA :
+
 setwd("/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_analysis/raw_Data_Methyl")
 cna         <- fread('data_CNA.txt', data.table = F)
 gene.exp    <- fread('data_RNA_Seq_v2_mRNA_median_all_sample_Zscores.txt', data.table = F)
@@ -55,7 +66,7 @@ setwd("/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_analysis/output_Data_2026
 fwrite(cna_filter,"pos_cna.txt")
 fwrite(exp_filter,"pos_exp.txt")
 fwrite(meth_filter,"pos_meth.txt")
-# ────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 ##  read the saved filter cna,exp,meth data
 # setwd("/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_analysis/output_Data_2026")
@@ -74,18 +85,18 @@ model_pos     <- fread(file.path(DATA_DIR, "Output_posER_BRCA/posER_BRCA_trio_Mo
 #model_pos_loc <- readRDS(file.path(DATA_DIR, "Output_posER_BRCA/LZ_trio_result_baycns_pos_ALL_with_BH_fdr_qval_with_location.rds"))
 #model_neg_loc <- readRDS(file.path(DATA_DIR, "Output_negER_BRCA/LZ_trio_result_baycns_neg_ALL_with_BH_fdr_qval_with_location.rds"))
 
-# ────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-##  Figure :M1.1, trio: 135939
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## M1.1 exampe:  Figure :M1.1, trio: 135939
 model_pos %>% filter(trio_row==135939)
 
 trio_df <- data.frame(CNA=unlist(cna_filter %>% filter(cna.row==model_pos %>% filter(trio_row==135939) %>% pull(cna.row)) %>% select(-cna.row)),
                        Meth=unlist(meth_filter %>% filter(meth.row==model_pos %>% filter(trio_row==135939) %>% pull(meth.row)) %>% select(-meth.row)),
                        GE=unlist(exp_filter %>% filter(gene.row==model_pos %>% filter(trio_row==135939) %>% pull(gene.row)) %>% select(-gene.row)))
 
-dim(trio_df)
-cor(trio_df$GE,trio_df$Meth)
-cor(trio_df$CNA,trio_df$GE)
-cor(trio_df$CNA,trio_df$Meth)
+dim(trio_df) # 564,3
+cor(trio_df$GE,trio_df$Meth) # -0.68
+cor(trio_df$CNA,trio_df$GE)  # 0.08
+cor(trio_df$CNA,trio_df$Meth)  # 0.02
 
 # Scatterplot GE & Meth
 p01_1=ggplot(trio_df,aes(GE,Meth))+geom_point(aes(color=factor(CNA)))+theme_bw()+theme(legend.position="none",plot.title = element_text(size = 10),axis.title.x = element_text(size = 8),  axis.title.y = element_text(size = 8))+labs(title = 'M1.1 Gene Expression v. Methylation',subtitle = "(r=-0.6762893)", x= 'Gene Expression', y = 'Methylation')
@@ -95,33 +106,58 @@ p01_2 <- ggplot(trio_df, aes(x=factor(CNA), y=GE, color=factor(CNA)))+geom_boxpl
 p01_3 <- ggplot(trio_df, aes(x=factor(CNA), y=Meth))+geom_boxplot(aes(color=factor(CNA)))+theme_bw()+theme(legend.position="none",plot.title = element_text(size = 10),axis.title.x = element_text(size = 8),  axis.title.y = element_text(size = 8))+labs(title = 'M1.1 CNA v. Methylation', subtitle = "(r=0.02036697)",x = 'Copy Number Alternation', y = 'Methylation')
 (p01_1)/(p01_2|p01_3)
 ggsave("Pos_M1.1_trio135939.pdf")
-# ────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
+
+
+
+## ============ Compare baycn with MRGN ============================
 ## Load baycn result with 4312 sample trios:
-
 result_baycn <- fread("/Users/lianzuo/Downloads/trios_sample_baycn.csv")
 result_MRGN=head(model_pos,4213)
 
+## models distribution:
+sum(table(model_pos$Inferred.Model.BH_fdr)) # 292525
+table(model_pos$Inferred.Model.BH_fdr)/292525
+
 ## confusion matrix:
 a3 <- table(result_baycn$Inferred.Model, result_MRGN$Inferred.Model.BH_fdr)
+
+         M0.1 M0.2 M1.1 M1.2 M2.1 M2.2  M3  M4 Other
+  Error   16   60   11   19    6    1   3   0   509
+  M0.1   808    4   74    0    9    0  99   5    67
+  M0.2     1  111    0   16    0    1   2   0    97
+  M1.1    74    2  163    3    9    2  15   9    19
+  M1.2     0    8    0   19    0    2   0   0    26
+  M2.1    70    3  156    0   75    4  28  18    27
+  M2.2     0    9    3   14    0   16   4   0    18
+  M3     241   27   35    5    9    0 529  85    38
+  M4      25    7   98   14   42   49  78 188    28
+
 a3_df <- as.data.frame.matrix(a3)
 a3_df <- cbind(baycn_model = rownames(a3_df), a3_df)
 fwrite(a3_df, "/Users/lianzuo/Desktop/posER_brca_baycn_MRGN_confusion_matrix.csv")
 
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
+
+## ========= M1.1 by MRGN but M2.1 by baycn ===================
+## Combine the two dataframe:
 colnames(result_MRGN)[24]="Inferred.Model_raw"
 df_result_combine=result_MRGN %>% left_join(result_baycn,by=c("trio_row","meth.row","cna.row","gene.row","Total.PC.Count"))
 colnames(df_result_combine)[51]="baycn_Inferred.Model"
 
-## ========= M1.1 by MRGN but M2.1 by baycn ===================
+## filter to M1.1 by MRGN but M2.1 by baycn
 a1=df_result_combine %>% filter(Inferred.Model.BH_fdr=="M1.1",baycn_Inferred.Model=="M2.1")
 fwrite(a1,"trio_156samples_MRGN_M1.1_baycn_M2.1.csv")
 
+## ========= Figure with two trio correlation plot =============
 ## check several examples:
-### trio: 15
+### ======== trio: 15
+Noconfounder_pos %>% filter(trio_row==15)
 model_pos %>% filter(trio_row==15)
-trioRow==15
 
+trioRow==15
 trio_df <- data.frame(CNA=unlist(cna_filter %>% filter(cna.row==model_pos %>% filter(trio_row==trioRow) %>% pull(cna.row)) %>% select(-cna.row)),
                       Meth=unlist(meth_filter %>% filter(meth.row==model_pos %>% filter(trio_row==trioRow) %>% pull(meth.row)) %>% select(-meth.row)),
                       GE=unlist(exp_filter %>% filter(gene.row==model_pos %>% filter(trio_row==trioRow) %>% pull(gene.row)) %>% select(-gene.row)))
@@ -139,6 +175,8 @@ p01_2 <- ggplot(trio_df, aes(x=factor(CNA), y=GE, color=factor(CNA)))+geom_boxpl
 p01_3 <- ggplot(trio_df, aes(x=factor(CNA), y=Meth))+geom_boxplot(aes(color=factor(CNA)))+theme_bw()+theme(legend.position="none",plot.title = element_text(size = 10),axis.title.x = element_text(size = 8),  axis.title.y = element_text(size = 8))+labs(title = 'M1.1 CNA v. Methylation', subtitle = "(r=)",x = 'Copy Number Alternation', y = 'Methylation')
 (p01_1)/(p01_2|p01_3)
 
+### ======== trio: 99
+model_pos %>% filter(trio_row==99)
 
 trioRow=99
 trio_df <- data.frame(CNA=unlist(cna_filter %>% filter(cna.row==model_pos %>% filter(trio_row==trioRow) %>% pull(cna.row)) %>% select(-cna.row)),
@@ -158,6 +196,8 @@ p01_2 <- ggplot(trio_df, aes(x=factor(CNA), y=GE, color=factor(CNA)))+geom_boxpl
 p01_3 <- ggplot(trio_df, aes(x=factor(CNA), y=Meth))+geom_boxplot(aes(color=factor(CNA)))+theme_bw()+theme(legend.position="none",plot.title = element_text(size = 10),axis.title.x = element_text(size = 8),  axis.title.y = element_text(size = 8))+labs(title = 'M1.1 CNA v. Methylation', subtitle = "(r=)",x = 'Copy Number Alternation', y = 'Methylation')
 (p01_1)/(p01_2|p01_3)
 
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
 ## ============== M0.1 or M0.2 by MRGN but M3 or M4 by baycn ==================
 
 # a2=posER_brca_M0.1_M0.2_byMRGN_vs_M3_M4_by_baycn.csv is the 300 subset of combined MRGN and baycn 4213 samples result : 
@@ -169,24 +209,28 @@ a2=df_result_combine %>%
 
 fwrite(a2, "/Users/lianzuo/Desktop/posER_brca_M0.1_M0.2_byMRGN_vs_M3_M4_by_baycn.csv")
 a2=fread("/Users/lianzuo/Desktop/posER_brca_M0.1_M0.2_byMRGN_vs_M3_M4_by_baycn.csv")
+table(a2$baycn_Inferred.Model)
 
-# ────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# M3  M4 
+# 268  32 
 
-table(result_baycn$Inferred.Model,result_MRGN$Inferred.Model.BH_fdr)
-sum(table(model_pos$Inferred.Model.BH_fdr))
-table(model_pos$Inferred.Model.BH_fdr)/292525
+## ========= trios rerun but in baycn for 100,000 iterations ================
+baycn <- fread("/Users/lianzuo/Downloads/trio.reruns.lian.csv")
+table(baycn$Inferred.Model)
 
-Noconfounder_pos %>% filter(trio_row==15)
-model_pos %>% filter(trio_row==15)
+# Error  M0.1  M0.2  M1.1  M1.2  M2.1    M3    M4 
+#    1    35     7     7     3     1   219    27 
 
-# ────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-## models for BLCA and LIHC:
-model_BLCA <- fread("/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BLCA/Output_BLCA/BLCA_trio_Model_result_baycns_ALL_with_BH_fdr_qval_byLZ.txt")
-model_LIHC <- fread("/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_LIHC/Output_LIHC/LIHC_trio_Model_result_baycns_ALL_with_BH_fdr_qval_byLZ.txt")
+### Cofusion matrix
+table(a2$baycn_Inferred.Model,baycn$Inferred.Model)
+    
+#      Error M0.1  M0.2  M1.1  M1.2  M2.1   M3    M4
+#  M3     1   35    7     4     0      0    215    6
+#  M4     0    0    0     3     3      1     4    21
 
-table(model_BLCA$Inferred.Model.BH_fdr)/sum(table(model_BLCA$Inferred.Model.BH_fdr))
+# ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-table(model_LIHC$Inferred.Model.BH_fdr)/sum(table(model_LIHC$Inferred.Model.BH_fdr))
+
 
 
 
