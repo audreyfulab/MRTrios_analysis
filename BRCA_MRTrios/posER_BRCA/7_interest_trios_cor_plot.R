@@ -440,3 +440,35 @@ p01_3 <- ggplot(trio_df, aes(x=factor(CNA), y=Meth))+geom_boxplot(aes(color=fact
 
 # ==================================================================================================================================================================
 
+a_nocon=Noconfounder_pos %>% filter(trio_row %in% baycn$trio_row)
+a_no=a_nocon %>% select(trio_row,cor_CNA_Exp,cor_CNA_Meth,cor_Exp_Meth,Inferred.Model)
+colnames(a_no)[5]="Inferred.Model_NoConfounder"
+com=baycn %>% left_join(a_no ,by="trio_row")
+a_MRGN=a2 %>% select(trio_row,Inferred.Model.BH_fdr,Inferred.Model_raw,Inferred.Model.qval)
+final_com=com %>% left_join(a_MRGN,by="trio_row")
+
+## trio:584
+
+trioRow=584
+# cor(C_E)
+
+## trio:584, InferredModel_raw = "M0.2",InferModel.BH = "M0.2", baycn_Model="M3"
+trio_df <- data.frame(CNA=unlist(cna_filter %>% filter(cna.row==model_pos %>% filter(trio_row==trioRow) %>% pull(cna.row)) %>% select(-cna.row)),
+                      Meth=unlist(meth_filter %>% filter(meth.row==model_pos %>% filter(trio_row==trioRow) %>% pull(meth.row)) %>% select(-meth.row)),
+                      GE=unlist(exp_filter %>% filter(gene.row==model_pos %>% filter(trio_row==trioRow) %>% pull(gene.row)) %>% select(-gene.row)))
+
+dim(trio_df)
+cor(trio_df$GE,trio_df$Meth, use = "complete.obs") # -0.0083
+cor(trio_df$CNA,trio_df$GE, use = "complete.obs") #0.0034
+cor(trio_df$CNA,trio_df$Meth, use = "complete.obs") # -0.2071
+
+# Scatterplot GE & Meth
+p01_1=ggplot(trio_df,aes(GE,Meth))+geom_point(aes(color=factor(CNA)))+theme_bw()+theme(legend.position="none",plot.title = element_text(size = 10),axis.title.x = element_text(size = 8),  axis.title.y = element_text(size = 8))+labs(title = 'M0.1 Gene Expression v. Methylation',subtitle = "(r= -0.0083)", x= 'Gene Expression', y = 'Methylation')
+#Boxplot CNA & GE
+p01_2 <- ggplot(trio_df, aes(x=factor(CNA), y=GE, color=factor(CNA)))+geom_boxplot()+theme_bw()+theme(legend.position="none",plot.title = element_text(size = 10),axis.title.x = element_text(size = 8), axis.title.y = element_text(size = 8))+labs(title = 'M0.1 CNA v. GE', subtitle = "(r= 0.0034)",x = 'Copy Number Alternation', y = 'Gene Expression')
+# Boxplot CNA & Meth
+p01_3 <- ggplot(trio_df, aes(x=factor(CNA), y=Meth))+geom_boxplot(aes(color=factor(CNA)))+theme_bw()+theme(legend.position="none",plot.title = element_text(size = 10),axis.title.x = element_text(size = 8),  axis.title.y = element_text(size = 8))+labs(title = 'M0.1 CNA v. Methylation', subtitle = "(r= -0.2071)",x = 'Copy Number Alternation', y = 'Methylation')
+(p01_1)/(p01_2|p01_3)
+
+## Saved: /Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BRCA/Figure/trio_584_posER_brca_M0.2_MRGN_baycn_M3.pdf
+
