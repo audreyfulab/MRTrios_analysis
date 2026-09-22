@@ -19,9 +19,10 @@ humanmeth         <- read.csv("GPL13534_HumanMethylation450_15017482_v.1.1 2.csv
 biomart           <- read.delim("ensembl37_genes_p13_biomart.txt", header = TRUE)
 clinical.neg      <- fread("names.neg.patient2.txt", header = FALSE)
 clinical.pos      <- fread("names.pos.patient2.txt", header = FALSE)
-# --- load new inferred FDR models ------
-Model_posER_BRCA  <- fread("/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BRCA/Output_posER_BRCA/trio_posER_BRCA_results_ALL.txt", sep = "\t")
-Model_posER_BRCA  <- fread("/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BRCA/Output_posER_BRCA/trio_posER_BRCA_results_ALL.txt", sep = "\t")
+
+## load new inferred FDR models
+Model_posER_BRCA <- fread("/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BRCA/Output_posER_BRCA/posER_BRCA_trio_Model_results_ALL_with_BH_fdr_qval_byLZ.txt", sep = "\t")
+Model_negER_BRCA <- fread("/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BRCA/Output_negER_BRCA/negER_BRCA_trio_Model_results_ALL_with_BH_fdr_qval_byLZ.txt", sep = "\t")
 
 # ============================================================
 # Step 3a: Preprocess once
