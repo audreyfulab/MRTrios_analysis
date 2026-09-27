@@ -11,9 +11,11 @@ library(tidyverse)
 # ============================================================
 # Step 1: Load trios + saved preprocessed lists
 # ============================================================
-trios <- fread("/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_analysis/raw_Data_Methyl/trio.final.protein.coding.txt")
+#trios <- fread("/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_analysis/raw_Data_Methyl/trio.final.protein.coding.txt")
+trios       <- fread("/wsu/home/hb/hb68/hb6890/fulab/MRTrios/raw_Data_Methyl/trio.final.protein.coding.txt")
 
-setwd("/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BRCA/process_data_BRCA")
+#setwd("/Users/lianzuo/LZ/ResearchProject/Fulab/MRTrios_BRCA/process_data_BRCA")
+setwd("/wsu/home/hb/hb68/hb6890/fulab/MRTrios/Output_posER_BRCA")
 posER_BRCA_filter <- readRDS("posER_BRCA_data_filter_list.rds")
 negER_BRCA_filter <- readRDS("negER_BRCA_data_filter_list.rds")
 
