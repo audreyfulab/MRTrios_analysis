@@ -68,6 +68,8 @@ compute_trio_stats <- function(d, trios, method = "pearson") {
               Meth = sum(rowSums(!is.na(M)) == 0))
   message("Trios with no data -> ",
           paste(names(n_miss), n_miss, sep = ": ", collapse = ", "))
+
+  # Trios with no data -> CNA: 336, Exp: 382, Meth: 3
   
   ce <- row_cor(C, E, method)
   cm <- row_cor(C, M, method)
